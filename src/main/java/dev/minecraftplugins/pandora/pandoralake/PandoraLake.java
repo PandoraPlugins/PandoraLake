@@ -4,6 +4,7 @@ import com.azortis.azortislib.utils.FormatUtil;
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import dev.minecraftplugins.pandora.pandoralake.commands.ReloadCommand;
 import dev.minecraftplugins.pandora.pandoralake.rewards.RewardsManager;
 import dev.minecraftplugins.pandora.pandoralake.settings.SettingsManager;
 import dev.minecraftplugins.pandora.pandoralake.settings.messages.Message;
@@ -48,6 +49,7 @@ public final class PandoraLake extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        new ReloadCommand(this);
         rewardsManager = new RewardsManager(this);
         Bukkit.getLogger().info("Hooked into WorldGuard!");
     }
