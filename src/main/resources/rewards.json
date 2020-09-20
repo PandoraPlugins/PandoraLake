@@ -1,0 +1,77 @@
+{
+  "Rewards": {
+    "example1": {
+      "Enabled": true,
+      "Chance": 100,
+      "XP": 25,
+      "Commands": [],
+      "Item": {
+        "GiveOnFish": true,
+        "Name": "&d&lPandora&5&lPVP",
+        "Lore": [
+          "&d&lPandora&5&lPVP",
+          "",
+          "&6Donate at our store today!"
+        ],
+        "Amount": 2,
+        "MaterialID": 1,
+        "MaterialData": 0,
+        "NBTTags": [
+          "lakes.spawned"
+        ],
+        "Glowing": true,
+        "Enchantments": {
+          "Sharpness": 1,
+          "Unbreaking": 10
+        }
+      },
+      "Message": {
+        "ActionBar": {
+          "Enabled": false,
+          "Message": "DummyMessage",
+          "Sound": {
+            "Enabled": false,
+            "SoundName": "arrow_hit",
+            "Pitch": 1.0,
+            "Volume": 1.0
+          }
+        },
+        "Bars": {
+          "TitleBar": {
+            "Enabled": false,
+            "Message": "DummyMessage",
+            "FadeInTime": 0,
+            "FadeOutTime": 0,
+            "ViewingTime": 20,
+            "Sound": {
+              "Enabled": false,
+              "SoundName": "arrow_hit",
+              "Pitch": 1.0,
+              "Volume": 1.0
+            }
+          },
+          "SubTitle": {
+            "Enabled": false,
+            "Message": "DummyMessage",
+            "FadeInTime": 0,
+            "FadeOutTime": 0,
+            "ViewingTime": 20,
+            "Sound": {
+              "Enabled": false,
+              "SoundName": "arrow_hit",
+              "Pitch": 1.0,
+              "Volume": 1.0
+            }
+          }
+        },
+        "Message": "&d&lPandora&5&lPVP &7> &8You caught a {reward}!",
+        "MessageSound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      }
+    }
+  }
+}

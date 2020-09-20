@@ -1,0 +1,9 @@
+name: PandoraLake
+version: ${project.version}
+main: dev.minecraftplugins.pandora.pandoralake.PandoraLake
+depend: [ WorldGuard ]
+authors: [ X1XX ]
+description: PandoraLake plugin.
+permissions:
+  lakes.rl:
+    description: Reload the lakes plugin.

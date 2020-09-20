@@ -1,0 +1,100 @@
+{
+  "WGFlag": "PandoraLakeFlag",
+  "FishingSpeed": 100,
+  "FishingSpeedVariation": 100,
+  "InstantPickup": false,
+  "NoFishingMessage": {
+    "ActionBar": {
+      "Enabled": false,
+      "Message": "DummyMessage",
+      "Sound": {
+        "Enabled": false,
+        "SoundName": "arrow_hit",
+        "Pitch": 1.0,
+        "Volume": 1.0
+      }
+    },
+    "Bars": {
+      "TitleBar": {
+        "Enabled": false,
+        "Message": "DummyMessage",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      },
+      "SubTitle": {
+        "Enabled": false,
+        "Message": "DummyMessage",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      }
+    },
+    "Message": "&d&lPandora&5&lPVP &7> &8Please only fish in designated zones.",
+    "MessageSound": {
+      "Enabled": false,
+      "SoundName": "arrow_hit",
+      "Pitch": 1.0,
+      "Volume": 1.0
+    }
+  },
+  "FishingMessage": {
+    "ActionBar": {
+      "Enabled": false,
+      "Message": "DummyMessage",
+      "Sound": {
+        "Enabled": false,
+        "SoundName": "arrow_hit",
+        "Pitch": 1.0,
+        "Volume": 1.0
+      }
+    },
+    "Bars": {
+      "TitleBar": {
+        "Enabled": false,
+        "Message": "DummyMessage",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      },
+      "SubTitle": {
+        "Enabled": false,
+        "Message": "DummyMessage",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      }
+    },
+    "Message": "&d&lPandora&5&lPVP &7> &8Please only fish in designated zones.",
+    "MessageSound": {
+      "Enabled": false,
+      "SoundName": "arrow_hit",
+      "Pitch": 1.0,
+      "Volume": 1.0
+    }
+  }
+}
