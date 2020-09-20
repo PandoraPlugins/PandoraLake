@@ -16,9 +16,9 @@
         "Amount": 2,
         "MaterialID": 1,
         "MaterialData": 0,
-        "NBTTags": [
-          "lakes.spawned"
-        ],
+        "NBTTags": {
+          "lakes.spawned": "dummy"
+        },
         "Glowing": true,
         "Enchantments": {
           "Sharpness": 1,

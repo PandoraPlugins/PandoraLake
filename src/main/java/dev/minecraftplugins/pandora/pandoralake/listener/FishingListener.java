@@ -1,14 +1,18 @@
 package dev.minecraftplugins.pandora.pandoralake.listener;
 
 import com.azortis.azortislib.experimental.inventory.StackBuilder;
-import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import dev.minecraftplugins.pandora.pandoralake.PandoraLake;
+import dev.minecraftplugins.pandora.pandoralake.glowing.Glow;
 import dev.minecraftplugins.pandora.pandoralake.settings.messages.Message;
 import dev.minecraftplugins.pandora.pandoralake.settings.rewards.Reward;
-import net.minecraft.server.v1_8_R3.EntityFishingHook;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -16,14 +20,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class FishingListener implements Listener {
     private final PandoraLake plugin;
-    private final List<Player> playerList = new ArrayList<>();
 
     public FishingListener(PandoraLake plugin) {
         this.plugin = plugin;
@@ -33,28 +39,32 @@ public class FishingListener implements Listener {
     public void onPlayerFish(PlayerFishEvent event) {
         // We need to determine if they're fishing within a special designated region with the fishing flag allowed.
         // We check whether the hook is in the region so we can make sure they're not fishing from outside/inside a
-        // different region.
-        LocalPlayer player = WGBukkit.getPlugin().wrapPlayer(event.getPlayer());
-        if (WGBukkit.getPlugin().getRegionContainer().createQuery().testState(event.getHook().getLocation(), player,
+        // different regions
+
+        if (WGBukkit.getPlugin().getRegionContainer().createQuery().testState(event.getHook().getLocation(), (Player) null,
                 plugin.getFishingFlag())) {
             // We have determined that they're able to fish and get custom rewards inside this region,
+
             switch (event.getState()) {
                 case FISHING:
                     // They cast our their rod, we set the time required to bite to the correct time based on values.
                     // We find the minimal number of ticks required for a player to bite.
                     int catchTime = plugin.getSettingsManager().getSettings().fishingSpeed;
                     // We add to the base ticks a certain number within the range given.
-                    catchTime += ThreadLocalRandom.current().nextInt(plugin.getSettingsManager().getSettings().fishingSpeedRange);
+                    if (plugin.getSettingsManager().getSettings().fishingSpeedRange > 0)
+                        catchTime += ThreadLocalRandom.current().nextInt(plugin.getSettingsManager().getSettings().fishingSpeedRange);
                     // We now set the time required for a bite.
                     setBiteTime(event.getHook(), catchTime);
-                    // Now we add them to the list.
-                    playerList.add(event.getPlayer());
                     plugin.consumeMessage(event.getPlayer(), plugin.getSettingsManager().getSettings().fishingMessage,
                             Collections.emptyMap());
                     break;
                 case CAUGHT_FISH:
                     // Player has successfully caught the fish.
                     Reward reward = plugin.getRewardsManager().getRandomReward();
+                    if (reward == null) {
+                        event.setCancelled(true);
+                        return;
+                    }
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("{reward}", reward.item.name);
                     plugin.consumeMessage(event.getPlayer(), reward.message, placeholders);
@@ -65,9 +75,34 @@ public class FishingListener implements Listener {
                                     .lore(reward.item.lore).amount(reward.item.amount)
                                     .data((short) reward.item.data).name(reward.item.name)
                                     .build();
-                            item.setItemStack(itemStack);
+                            for (Map.Entry<String, Integer> stringIntegerEntry : reward.item.enchantmentMap.entrySet()) {
+                                itemStack.addUnsafeEnchantment(new EnchantmentWrapper(
+                                        Enchantment.getByName(stringIntegerEntry.getKey().toLowerCase()).id), stringIntegerEntry.getValue());
+                            }
+                            if (reward.item.glowing)
+                                itemStack.addUnsafeEnchantment(new Glow(70), 1);
+                            if (reward.item.nbtTags.size() > 0) {
+                                net.minecraft.server.v1_8_R3.ItemStack nmsI = CraftItemStack.asNMSCopy(itemStack);
+                                NBTTagCompound compound = nmsI.getTag();
+                                if (compound == null) compound = new NBTTagCompound();
+                                reward.item.nbtTags.forEach((compound::setString));
+                                nmsI.setTag(compound);
+                                itemStack = CraftItemStack.asBukkitCopy(nmsI);
+                            }
+                            if (!plugin.getSettingsManager().getSettings().instantPickup)
+                                item.setItemStack(itemStack);
+                            else {
+                                item.remove();
+                                int slotsLeft = event.getPlayer().getInventory().firstEmpty();
+                                if (slotsLeft < 0) {
+                                    plugin.consumeMessage(event.getPlayer(),
+                                            plugin.getSettingsManager().getSettings().slotsFullMessage,
+                                            Collections.emptyMap());
+
+                                } else event.getPlayer().getInventory().setItem(slotsLeft, itemStack);
+                            }
                         } else {
-                            item.setItemStack(null);
+                            item.remove();
                         }
                     }
                     if (reward.commands.length > 0) {
@@ -84,7 +119,7 @@ public class FishingListener implements Listener {
 
         } else {
             // If they try fishing like normal outside of special zone, we cancel it.
-            if (event.getState() == PlayerFishEvent.State.FISHING) {
+            if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
                 event.setCancelled(true);
                 // We cancelled their event if they try fishing.
                 // Now we send them configured messages from their overlords about fishing.

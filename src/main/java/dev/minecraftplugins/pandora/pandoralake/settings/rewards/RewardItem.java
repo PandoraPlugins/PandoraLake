@@ -18,7 +18,7 @@ public class RewardItem {
     @SerializedName("MaterialData")
     public int data;
     @SerializedName("NBTTags")
-    public String[] nbtTags;
+    public Map<String, String> nbtTags;
     @SerializedName("Glowing")
     public boolean glowing;
     @SerializedName("Enchantments")

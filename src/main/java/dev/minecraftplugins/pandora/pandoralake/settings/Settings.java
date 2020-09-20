@@ -18,4 +18,6 @@ public class Settings implements Serializable {
     public Message noFishingMessage;
     @SerializedName("FishingMessage")
     public Message fishingMessage;
+    @SerializedName("SlotsFullMessage")
+    public Message slotsFullMessage;
 }

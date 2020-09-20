@@ -52,7 +52,7 @@
   },
   "FishingMessage": {
     "ActionBar": {
-      "Enabled": false,
+      "Enabled": true,
       "Message": "DummyMessage",
       "Sound": {
         "Enabled": false,
@@ -63,8 +63,8 @@
     },
     "Bars": {
       "TitleBar": {
-        "Enabled": false,
-        "Message": "DummyMessage",
+        "Enabled": true,
+        "Message": "Title",
         "FadeInTime": 0,
         "FadeOutTime": 0,
         "ViewingTime": 20,
@@ -76,10 +76,10 @@
         }
       },
       "SubTitle": {
-        "Enabled": false,
+        "Enabled": true,
         "Message": "DummyMessage",
-        "FadeInTime": 0,
-        "FadeOutTime": 0,
+        "FadeInTime": 20,
+        "FadeOutTime": 20,
         "ViewingTime": 20,
         "Sound": {
           "Enabled": false,
@@ -89,10 +89,57 @@
         }
       }
     },
-    "Message": "&d&lPandora&5&lPVP &7> &8Please only fish in designated zones.",
+    "Message": "",
     "MessageSound": {
-      "Enabled": false,
-      "SoundName": "arrow_hit",
+      "Enabled": true,
+      "SoundName": "PISTON_EXTEND",
+      "Pitch": 1.0,
+      "Volume": 1.0
+    }
+  },
+  "SlotsFullMessage":  {
+    "ActionBar": {
+      "Enabled": true,
+      "Message": "DummyMessage",
+      "Sound": {
+        "Enabled": false,
+        "SoundName": "arrow_hit",
+        "Pitch": 1.0,
+        "Volume": 1.0
+      }
+    },
+    "Bars": {
+      "TitleBar": {
+        "Enabled": true,
+        "Message": "Title",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      },
+      "SubTitle": {
+        "Enabled": true,
+        "Message": "DummyMessage",
+        "FadeInTime": 20,
+        "FadeOutTime": 20,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      }
+    },
+    "Message": "Slots Full",
+    "MessageSound": {
+      "Enabled": true,
+      "SoundName": "PISTON_EXTEND",
       "Pitch": 1.0,
       "Volume": 1.0
     }

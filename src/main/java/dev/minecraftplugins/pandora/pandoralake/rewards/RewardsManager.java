@@ -41,6 +41,7 @@ public class RewardsManager {
             }
         }
         if (rewards.size() > 1) Collections.shuffle(rewards);
+        else return null;
         return rewards.get(0).getValue();
     }
 }
