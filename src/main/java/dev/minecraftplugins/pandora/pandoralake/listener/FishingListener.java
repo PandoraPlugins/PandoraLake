@@ -60,10 +60,6 @@ public class FishingListener implements Listener {
                 case CAUGHT_FISH:
                     // Player has successfully caught the fish.
                     Reward reward = plugin.getRewardsManager().getRandomReward();
-                    if (reward == null) {
-                        event.setCancelled(true);
-                        return;
-                    }
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("{reward}", reward.item.name);
                     plugin.consumeMessage(event.getPlayer(), reward.message, placeholders);

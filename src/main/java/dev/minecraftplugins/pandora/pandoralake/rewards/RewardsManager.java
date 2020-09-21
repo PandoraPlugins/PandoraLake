@@ -9,7 +9,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RewardsManager {
     private final PandoraLake plugin;
     Map<String, Double> chanceMap = new HashMap<>();
-    private int totalEnabledRewardsChance = 0;
 
     public RewardsManager(PandoraLake plugin) {
         this.plugin = plugin;
@@ -17,7 +16,7 @@ public class RewardsManager {
     }
 
     public void reload() {
-        totalEnabledRewardsChance = 0;
+        int totalEnabledRewardsChance = 0;
         chanceMap.clear();
         Map<String, Reward> rewardMap = plugin.getSettingsManager().getRewards().rewardMap;
         for (Map.Entry<String, Reward> stringRewardEntry : rewardMap.entrySet()) {
@@ -36,12 +35,14 @@ public class RewardsManager {
         List<Map.Entry<String, Reward>> rewards = new ArrayList<>();
         double roll = ThreadLocalRandom.current().nextDouble(100.0);
         for (Map.Entry<String, Reward> stringRewardEntry : plugin.getSettingsManager().getRewards().rewardMap.entrySet()) {
-            if (stringRewardEntry.getValue().enabled && chanceMap.get(stringRewardEntry.getKey()) > roll) {
+            if (stringRewardEntry.getValue().enabled && chanceMap.get(stringRewardEntry.getKey()) >= roll) {
                 rewards.add(stringRewardEntry);
             }
         }
-        if (rewards.size() > 1) Collections.shuffle(rewards);
+        if (rewards.size() > 1) {
+            Collections.shuffle(rewards);
+            return rewards.get(0).getValue();
+        } else if (rewards.size() == 1) return rewards.get(0).getValue();
         else return null;
-        return rewards.get(0).getValue();
     }
 }
