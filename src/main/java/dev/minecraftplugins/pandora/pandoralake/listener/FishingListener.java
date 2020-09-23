@@ -9,6 +9,7 @@ import dev.minecraftplugins.pandora.pandoralake.settings.rewards.Reward;
 import net.minecraft.server.v1_8_R3.Enchantment;
 import net.minecraft.server.v1_8_R3.EntityFishingHook;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -29,9 +30,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class FishingListener implements Listener {
     private final PandoraLake plugin;
+    private final FishingUpdater updater;
 
     public FishingListener(PandoraLake plugin) {
         this.plugin = plugin;
+        updater = new FishingUpdater(plugin);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, updater, 0, 20);
     }
 
     @EventHandler
@@ -52,61 +56,76 @@ public class FishingListener implements Listener {
                     // We add to the base ticks a certain number within the range given.
                     if (plugin.getSettingsManager().getSettings().fishingSpeedRange > 0)
                         catchTime += ThreadLocalRandom.current().nextInt(plugin.getSettingsManager().getSettings().fishingSpeedRange);
-                    // We now set the time required for a bite.
-                    setBiteTime(event.getHook(), catchTime);
+                    // We now set the bobber to catch after 1 second, usually impossible, but it is to throw off autofishers.
+                    setBiteTime(event.getHook(), 20);
+                    // Now we add them to the updater to make sure they're kept track of.
+                    updater.addPlayer(event.getPlayer(), catchTime);
                     plugin.consumeMessage(event.getPlayer(), plugin.getSettingsManager().getSettings().fishingMessage,
                             Collections.emptyMap());
                     break;
                 case CAUGHT_FISH:
-                    // Player has successfully caught the fish.
-                    Reward reward = plugin.getRewardsManager().getRandomReward();
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("{reward}", reward.item.name);
-                    plugin.consumeMessage(event.getPlayer(), reward.message, placeholders);
-                    if (event.getCaught() instanceof Item) {
-                        Item item = (Item) event.getCaught();
-                        if (reward.item.shouldGive) {
-                            ItemStack itemStack = StackBuilder.start(Material.getMaterial(reward.item.id))
-                                    .lore(reward.item.lore).amount(reward.item.amount)
-                                    .data((short) reward.item.data).name(reward.item.name)
-                                    .build();
-                            for (Map.Entry<String, Integer> stringIntegerEntry : reward.item.enchantmentMap.entrySet()) {
-                                itemStack.addUnsafeEnchantment(new EnchantmentWrapper(
-                                        Enchantment.getByName(stringIntegerEntry.getKey().toLowerCase()).id), stringIntegerEntry.getValue());
-                            }
-                            if (reward.item.glowing)
-                                itemStack.addUnsafeEnchantment(new Glow(70), 1);
-                            if (reward.item.nbtTags.size() > 0) {
-                                net.minecraft.server.v1_8_R3.ItemStack nmsI = CraftItemStack.asNMSCopy(itemStack);
-                                NBTTagCompound compound = nmsI.getTag();
-                                if (compound == null) compound = new NBTTagCompound();
-                                reward.item.nbtTags.forEach((compound::setString));
-                                nmsI.setTag(compound);
-                                itemStack = CraftItemStack.asBukkitCopy(nmsI);
-                            }
-                            if (!plugin.getSettingsManager().getSettings().instantPickup)
-                                item.setItemStack(itemStack);
-                            else {
-                                item.remove();
-                                int slotsLeft = event.getPlayer().getInventory().firstEmpty();
-                                if (slotsLeft < 0) {
-                                    plugin.consumeMessage(event.getPlayer(),
-                                            plugin.getSettingsManager().getSettings().slotsFullMessage,
-                                            Collections.emptyMap());
+                    // Player has successfully caught the bobber
+                    event.setCancelled(true);
+                    event.getHook().remove();
+                    event.getCaught().remove();
 
-                                } else event.getPlayer().getInventory().setItem(slotsLeft, itemStack);
-                            }
-                        } else {
-                            item.remove();
-                        }
-                    }
-                    if (reward.commands.length > 0) {
-                        for (String command : reward.commands) {
-                            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "/" + command);
-                        }
-                    }
-                    event.setExpToDrop(reward.xp);
+                    updater.removePlayer(event.getPlayer());
+                    plugin.consumeMessage(event.getPlayer(), plugin.getSettingsManager().getSettings().catchBobberMessage,
+                            Collections.emptyMap());
+
                     break;
+                case FAILED_ATTEMPT:
+                    // We try to catch an item
+                    if (updater.tryCatch(event.getPlayer())) {
+                        // This means we successfully caught an item.
+                        Reward reward = plugin.getRewardsManager().getRandomReward();
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("{reward}", reward.item.name);
+                        plugin.consumeMessage(event.getPlayer(), reward.message, placeholders);
+                        if (event.getCaught() instanceof Item) {
+                            Item item = (Item) event.getCaught();
+                            if (reward.item.shouldGive) {
+                                ItemStack itemStack = StackBuilder.start(Material.getMaterial(reward.item.id))
+                                        .lore(reward.item.lore).amount(reward.item.amount)
+                                        .data((short) reward.item.data).name(reward.item.name)
+                                        .build();
+                                for (Map.Entry<String, Integer> stringIntegerEntry : reward.item.enchantmentMap.entrySet()) {
+                                    itemStack.addUnsafeEnchantment(new EnchantmentWrapper(
+                                            Enchantment.getByName(stringIntegerEntry.getKey().toLowerCase()).id), stringIntegerEntry.getValue());
+                                }
+                                if (reward.item.glowing)
+                                    itemStack.addUnsafeEnchantment(new Glow(70), 1);
+                                if (reward.item.nbtTags.size() > 0) {
+                                    net.minecraft.server.v1_8_R3.ItemStack nmsI = CraftItemStack.asNMSCopy(itemStack);
+                                    NBTTagCompound compound = nmsI.getTag();
+                                    if (compound == null) compound = new NBTTagCompound();
+                                    reward.item.nbtTags.forEach((compound::setString));
+                                    nmsI.setTag(compound);
+                                    itemStack = CraftItemStack.asBukkitCopy(nmsI);
+                                }
+                                if (!plugin.getSettingsManager().getSettings().instantPickup)
+                                    item.setItemStack(itemStack);
+                                else {
+                                    item.remove();
+                                    int slotsLeft = event.getPlayer().getInventory().firstEmpty();
+                                    if (slotsLeft < 0) {
+                                        plugin.consumeMessage(event.getPlayer(),
+                                                plugin.getSettingsManager().getSettings().slotsFullMessage,
+                                                Collections.emptyMap());
+
+                                    } else event.getPlayer().getInventory().setItem(slotsLeft, itemStack);
+                                }
+                            } else {
+                                item.remove();
+                            }
+                        }
+                        if (reward.commands.length > 0) {
+                            for (String command : reward.commands) {
+                                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "/" + command);
+                            }
+                        }
+                        event.setExpToDrop(reward.xp);
+                    }
                 default:
                     break;
             }

@@ -14,10 +14,22 @@ public class Settings implements Serializable {
     public int fishingSpeedRange;
     @SerializedName("InstantPickup")
     public boolean instantPickup;
+    @SerializedName("FishingTime")
+    public int fishingTime;
     @SerializedName("NoFishingMessage")
     public Message noFishingMessage;
     @SerializedName("FishingMessage")
     public Message fishingMessage;
     @SerializedName("SlotsFullMessage")
     public Message slotsFullMessage;
+    @SerializedName("FishTooEarlyMessage")
+    public Message fishTooEarlyMessage;
+    @SerializedName("FishTooLateMessage")
+    public Message fishTooLateMessage;
+    @SerializedName("FishCaughtMessage")
+    public Message caughtFishMessage;
+    @SerializedName("TryToCatchFishMessage")
+    public Message readyToCatchMessage;
+    @SerializedName("CatchBobberMessage")
+    public Message catchBobberMessage;
 }

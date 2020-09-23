@@ -1,8 +1,9 @@
 {
   "WGFlag": "PandoraLakeFlag",
-  "FishingSpeed": 100,
-  "FishingSpeedVariation": 100,
+  "FishingSpeed": 5,
+  "FishingSpeedVariation": 2,
   "InstantPickup": false,
+  "FishingTime": 5,
   "NoFishingMessage": {
     "ActionBar": {
       "Enabled": false,
@@ -97,7 +98,7 @@
       "Volume": 1.0
     }
   },
-  "SlotsFullMessage":  {
+  "SlotsFullMessage": {
     "ActionBar": {
       "Enabled": true,
       "Message": "DummyMessage",
@@ -137,6 +138,241 @@
       }
     },
     "Message": "Slots Full",
+    "MessageSound": {
+      "Enabled": true,
+      "SoundName": "PISTON_EXTEND",
+      "Pitch": 1.0,
+      "Volume": 1.0
+    }
+  },
+  "FishTooEarlyMessage": {
+    "ActionBar": {
+      "Enabled": true,
+      "Message": "DummyMessage",
+      "Sound": {
+        "Enabled": false,
+        "SoundName": "arrow_hit",
+        "Pitch": 1.0,
+        "Volume": 1.0
+      }
+    },
+    "Bars": {
+      "TitleBar": {
+        "Enabled": true,
+        "Message": "Title",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      },
+      "SubTitle": {
+        "Enabled": true,
+        "Message": "DummyMessage",
+        "FadeInTime": 20,
+        "FadeOutTime": 20,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      }
+    },
+    "Message": "Failed to catch fish.",
+    "MessageSound": {
+      "Enabled": true,
+      "SoundName": "PISTON_EXTEND",
+      "Pitch": 1.0,
+      "Volume": 1.0
+    }
+  },
+  "FishTooLateMessage":  {
+    "ActionBar": {
+      "Enabled": true,
+      "Message": "DummyMessage",
+      "Sound": {
+        "Enabled": false,
+        "SoundName": "arrow_hit",
+        "Pitch": 1.0,
+        "Volume": 1.0
+      }
+    },
+    "Bars": {
+      "TitleBar": {
+        "Enabled": true,
+        "Message": "Title",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      },
+      "SubTitle": {
+        "Enabled": true,
+        "Message": "DummyMessage",
+        "FadeInTime": 20,
+        "FadeOutTime": 20,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      }
+    },
+    "Message": "Failed to catch fish.",
+    "MessageSound": {
+      "Enabled": true,
+      "SoundName": "PISTON_EXTEND",
+      "Pitch": 1.0,
+      "Volume": 1.0
+    }
+  },
+  "FishCaughtMessage": {
+    "ActionBar": {
+      "Enabled": true,
+      "Message": "DummyMessage",
+      "Sound": {
+        "Enabled": false,
+        "SoundName": "arrow_hit",
+        "Pitch": 1.0,
+        "Volume": 1.0
+      }
+    },
+    "Bars": {
+      "TitleBar": {
+        "Enabled": true,
+        "Message": "Title",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      },
+      "SubTitle": {
+        "Enabled": true,
+        "Message": "DummyMessage",
+        "FadeInTime": 20,
+        "FadeOutTime": 20,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      }
+    },
+    "Message": "Caught a fish!",
+    "MessageSound": {
+      "Enabled": true,
+      "SoundName": "PISTON_EXTEND",
+      "Pitch": 1.0,
+      "Volume": 1.0
+    }
+  },
+  "TryToCatchFishMessage":  {
+    "ActionBar": {
+      "Enabled": true,
+      "Message": "DummyMessage",
+      "Sound": {
+        "Enabled": false,
+        "SoundName": "arrow_hit",
+        "Pitch": 1.0,
+        "Volume": 1.0
+      }
+    },
+    "Bars": {
+      "TitleBar": {
+        "Enabled": true,
+        "Message": "Title",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      },
+      "SubTitle": {
+        "Enabled": true,
+        "Message": "DummyMessage",
+        "FadeInTime": 20,
+        "FadeOutTime": 20,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      }
+    },
+    "Message": "Caught a fish!",
+    "MessageSound": {
+      "Enabled": true,
+      "SoundName": "PISTON_EXTEND",
+      "Pitch": 1.0,
+      "Volume": 1.0
+    }
+  },
+  "CatchBobberMessage":  {
+    "ActionBar": {
+      "Enabled": true,
+      "Message": "DummyMessage",
+      "Sound": {
+        "Enabled": false,
+        "SoundName": "arrow_hit",
+        "Pitch": 1.0,
+        "Volume": 1.0
+      }
+    },
+    "Bars": {
+      "TitleBar": {
+        "Enabled": true,
+        "Message": "Title",
+        "FadeInTime": 0,
+        "FadeOutTime": 0,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      },
+      "SubTitle": {
+        "Enabled": true,
+        "Message": "DummyMessage",
+        "FadeInTime": 20,
+        "FadeOutTime": 20,
+        "ViewingTime": 20,
+        "Sound": {
+          "Enabled": false,
+          "SoundName": "arrow_hit",
+          "Pitch": 1.0,
+          "Volume": 1.0
+        }
+      }
+    },
+    "Message": "Caught a fish!",
     "MessageSound": {
       "Enabled": true,
       "SoundName": "PISTON_EXTEND",
