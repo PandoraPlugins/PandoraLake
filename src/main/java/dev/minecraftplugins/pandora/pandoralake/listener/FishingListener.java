@@ -1,6 +1,6 @@
 package dev.minecraftplugins.pandora.pandoralake.listener;
 
-import com.azortis.azortislib.experimental.inventory.StackBuilder;
+import com.azortis.azortislib.inventory.item.ItemBuilder;
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import dev.minecraftplugins.pandora.pandoralake.PandoraLake;
 import dev.minecraftplugins.pandora.pandoralake.glowing.Glow;
@@ -85,7 +85,7 @@ public class FishingListener implements Listener {
                         if (event.getCaught() instanceof Item) {
                             Item item = (Item) event.getCaught();
                             if (reward.item.shouldGive) {
-                                ItemStack itemStack = StackBuilder.start(Material.getMaterial(reward.item.id))
+                                ItemStack itemStack = ItemBuilder.start(Material.getMaterial(reward.item.id))
                                         .lore(reward.item.lore).amount(reward.item.amount)
                                         .data((short) reward.item.data).name(reward.item.name)
                                         .build();
