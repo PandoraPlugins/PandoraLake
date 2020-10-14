@@ -11,6 +11,7 @@ import net.minecraft.server.v1_8_R3.EntityFishingHook;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.EnchantmentWrapper;
@@ -19,6 +20,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -43,41 +45,20 @@ public class FishingListener implements Listener {
         // We need to determine if they're fishing within a special designated region with the fishing flag allowed.
         // We check whether the hook is in the region so we can make sure they're not fishing from outside/inside a
         // different regions
-
         if (WGBukkit.getPlugin().getRegionContainer().createQuery().testState(event.getHook().getLocation(), (Player) null,
                 plugin.getFishingFlag())) {
             // We have determined that they're able to fish and get custom rewards inside this region,
-
             switch (event.getState()) {
                 case FISHING:
-                    // They cast our their rod, we set the time required to bite to the correct time based on values.
-                    // We find the minimal number of ticks required for a player to bite.
-                    int catchTime = plugin.getSettingsManager().getSettings().fishingSpeed;
-                    // We add to the base ticks a certain number within the range given.
-                    if (plugin.getSettingsManager().getSettings().fishingSpeedRange > 0)
-                        catchTime += ThreadLocalRandom.current().nextInt(plugin.getSettingsManager().getSettings().fishingSpeedRange);
-                    // We now set the bobber to catch after 1 second, usually impossible, but it is to throw off autofishers.
-                    setBiteTime(event.getHook(), 20);
-                    // Now we add them to the updater to make sure they're kept track of.
-                    updater.addPlayer(event.getPlayer(), catchTime);
-                    plugin.consumeMessage(event.getPlayer(), plugin.getSettingsManager().getSettings().fishingMessage,
-                            Collections.emptyMap());
-                    break;
-                case CAUGHT_FISH:
-                    // Player has successfully caught the bobber
-                    event.setCancelled(true);
-                    event.getHook().remove();
-                    event.getCaught().remove();
-
-                    updater.removePlayer(event.getPlayer());
-                    plugin.consumeMessage(event.getPlayer(), plugin.getSettingsManager().getSettings().catchBobberMessage,
-                            Collections.emptyMap());
-
+                    // Cast out rod, we should do nothing other than set it to bite immediately.
+                    setBiteTime(event.getHook(), 1);
                     break;
                 case FAILED_ATTEMPT:
-                    // We try to catch an item
+                    // Reeled rod back in.
                     if (updater.tryCatch(event.getPlayer())) {
-                        // This means we successfully caught an item.
+                        // Able to catch.
+                        plugin.consumeMessage(event.getPlayer(),
+                                plugin.getSettingsManager().getSettings().caughtFishMessage, Collections.emptyMap());
                         Reward reward = plugin.getRewardsManager().getRandomReward();
                         Map<String, String> placeholders = new HashMap<>();
                         placeholders.put("{reward}", reward.item.name);
@@ -125,20 +106,64 @@ public class FishingListener implements Listener {
                             }
                         }
                         event.setExpToDrop(reward.xp);
+
+
+                    } else {
+                        // Failed to catch
+                        event.getCaught().remove();
+                        updater.removePlayer(event.getPlayer());
+                        plugin.consumeMessage(event.getPlayer(),
+                                plugin.getSettingsManager().getSettings().fishTooEarlyMessage, Collections.emptyMap());
+
                     }
+                    break;
+                case CAUGHT_FISH:
+                    // Caught fake fish
+                    event.getCaught().remove();
+                    updater.removePlayer(event.getPlayer());
+                    // todo: add placeholders.
+                    plugin.consumeMessage(event.getPlayer(), plugin.getSettingsManager().getSettings().catchBobberMessage,
+                            Collections.emptyMap());
+                    break;
                 default:
                     break;
             }
 
-
         } else {
-            // If they try fishing like normal outside of special zone, we cancel it.
             if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-                event.setCancelled(true);
+                event.getCaught().remove();
                 // We cancelled their event if they try fishing.
                 // Now we send them configured messages from their overlords about fishing.
                 Message message = plugin.getSettingsManager().getSettings().noFishingMessage;
+                // todo: add placeholders.
                 plugin.consumeMessage(event.getPlayer(), message, Collections.emptyMap());
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBobberHit(ProjectileHitEvent event) {
+        // Detect if hook has hit water
+        if (event.getEntity() instanceof FishHook) {
+            // Made sure this is hook
+            Block b = event.getEntity().getLocation().getBlock();
+            System.out.println(b);
+            // get the block the hook hit
+            if (b.getType() == Material.WATER || b.getType() == Material.STATIONARY_WATER) {
+                // Make sure its water
+                if (WGBukkit.getPlugin().getRegionContainer().createQuery().testState(event.getEntity().getLocation(), (Player) null,
+                        plugin.getFishingFlag())) {
+                    // The hook has hit water and is inside our wg region. We add them to the list of things.
+                    int catchTime = plugin.getSettingsManager().getSettings().fishingSpeed;
+                    // We add to the base ticks a certain number within the range given.
+                    if (plugin.getSettingsManager().getSettings().fishingSpeedRange > 0)
+                        catchTime += ThreadLocalRandom.current().nextInt(plugin.getSettingsManager().getSettings().fishingSpeedRange);
+                    updater.addPlayer((Player) event.getEntity().getShooter(), catchTime);
+                    // todo: add in placeholders
+                    plugin.consumeMessage((Player) event.getEntity().getShooter(),
+                            plugin.getSettingsManager().getSettings().catchBobberMessage,
+                            Collections.emptyMap());
+                }
             }
         }
     }

@@ -25,8 +25,9 @@ public class FishingUpdater implements Runnable {
                 return;
             }
             integer--;
+            fishingMap.put(offlinePlayer, integer);
             if (integer < 0) {
-                if (integer < plugin.getSettingsManager().getSettings().fishingTime) {
+                if (integer < (plugin.getSettingsManager().getSettings().fishingTime * -1)) {
                     // remove them from the map, they're over the time limit
                     fishingMap.remove(offlinePlayer);
                     catchers.remove(offlinePlayer);
@@ -38,7 +39,6 @@ public class FishingUpdater implements Runnable {
                 plugin.consumeMessage(offlinePlayer.getPlayer(), plugin.getSettingsManager().getSettings().readyToCatchMessage,
                         Collections.emptyMap());
             }
-            fishingMap.put(offlinePlayer, integer);
         });
     }
 
@@ -47,15 +47,12 @@ public class FishingUpdater implements Runnable {
 
         // we remove them from the fishingmap because they failed to catch it and give them failed to catch msg.
         if (!contains && fishingMap.containsKey(player)) {
-            fishingMap.remove(player);
-            plugin.consumeMessage(player, plugin.getSettingsManager().getSettings().fishTooEarlyMessage, Collections.emptyMap());
+            removePlayer(player);
             return false;
         }
 
         if (contains) {
-            fishingMap.remove(player);
-            catchers.remove(player);
-            plugin.consumeMessage(player, plugin.getSettingsManager().getSettings().caughtFishMessage, Collections.emptyMap());
+            removePlayer(player);
             return true;
         }
         return false;
