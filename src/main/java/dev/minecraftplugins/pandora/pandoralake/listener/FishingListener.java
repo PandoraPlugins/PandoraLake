@@ -23,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class FishingListener implements Listener {
     private final PandoraLake plugin;
     private final FishingUpdater updater;
+
 
     public FishingListener(PandoraLake plugin) {
         this.plugin = plugin;
@@ -51,7 +53,8 @@ public class FishingListener implements Listener {
             switch (event.getState()) {
                 case FISHING:
                     // Cast out rod, we should do nothing other than set it to bite immediately.
-                    setBiteTime(event.getHook(), 1);
+                    setBiteTime(event.getHook(), 4);
+                    updater.addHook(event.getHook(), 7);
                     break;
                 case FAILED_ATTEMPT:
                     // Reeled rod back in.
@@ -63,41 +66,39 @@ public class FishingListener implements Listener {
                         Map<String, String> placeholders = new HashMap<>();
                         placeholders.put("{reward}", reward.item.name);
                         plugin.consumeMessage(event.getPlayer(), reward.message, placeholders);
-                        if (event.getCaught() instanceof Item) {
-                            Item item = (Item) event.getCaught();
-                            if (reward.item.shouldGive) {
-                                ItemStack itemStack = ItemBuilder.start(Material.getMaterial(reward.item.id))
-                                        .lore(reward.item.lore).amount(reward.item.amount)
-                                        .data((short) reward.item.data).name(reward.item.name)
-                                        .build();
-                                for (Map.Entry<String, Integer> stringIntegerEntry : reward.item.enchantmentMap.entrySet()) {
-                                    itemStack.addUnsafeEnchantment(new EnchantmentWrapper(
-                                            Enchantment.getByName(stringIntegerEntry.getKey().toLowerCase()).id), stringIntegerEntry.getValue());
-                                }
-                                if (reward.item.glowing)
-                                    itemStack.addUnsafeEnchantment(new Glow(70), 1);
-                                if (reward.item.nbtTags.size() > 0) {
-                                    net.minecraft.server.v1_8_R3.ItemStack nmsI = CraftItemStack.asNMSCopy(itemStack);
-                                    NBTTagCompound compound = nmsI.getTag();
-                                    if (compound == null) compound = new NBTTagCompound();
-                                    reward.item.nbtTags.forEach((compound::setString));
-                                    nmsI.setTag(compound);
-                                    itemStack = CraftItemStack.asBukkitCopy(nmsI);
-                                }
-                                if (!plugin.getSettingsManager().getSettings().instantPickup)
-                                    item.setItemStack(itemStack);
-                                else {
-                                    item.remove();
-                                    int slotsLeft = event.getPlayer().getInventory().firstEmpty();
-                                    if (slotsLeft < 0) {
-                                        plugin.consumeMessage(event.getPlayer(),
-                                                plugin.getSettingsManager().getSettings().slotsFullMessage,
-                                                Collections.emptyMap());
+                        if (reward.item.shouldGive) {
+                            ItemStack itemStack = ItemBuilder.start(Material.getMaterial(reward.item.id))
+                                    .lore(reward.item.lore).amount(reward.item.amount)
+                                    .data((short) reward.item.data).name(reward.item.name)
+                                    .build();
+                            for (Map.Entry<String, Integer> stringIntegerEntry : reward.item.enchantmentMap.entrySet()) {
+                                itemStack.addUnsafeEnchantment(new EnchantmentWrapper(
+                                        Enchantment.getByName(stringIntegerEntry.getKey().toLowerCase()).id), stringIntegerEntry.getValue());
+                            }
+                            if (reward.item.glowing)
+                                itemStack.addUnsafeEnchantment(new Glow(70), 1);
+                            if (reward.item.nbtTags.size() > 0) {
+                                net.minecraft.server.v1_8_R3.ItemStack nmsI = CraftItemStack.asNMSCopy(itemStack);
+                                NBTTagCompound compound = nmsI.getTag();
+                                if (compound == null) compound = new NBTTagCompound();
+                                reward.item.nbtTags.forEach((compound::setString));
+                                nmsI.setTag(compound);
+                                itemStack = CraftItemStack.asBukkitCopy(nmsI);
+                            }
+                            if (!plugin.getSettingsManager().getSettings().instantPickup) {
+                                Item item = event.getHook().getLocation().getWorld().dropItem(event.getHook().getLocation(), itemStack);
+                                Vector velocity = event.getPlayer().getEyeLocation().toVector().subtract(item.getLocation().toVector());
+                                velocity.setY(velocity.getY() + 1);
+                                item.setVelocity(velocity.multiply(0.1));
 
-                                    } else event.getPlayer().getInventory().setItem(slotsLeft, itemStack);
-                                }
                             } else {
-                                item.remove();
+                                int slotsLeft = event.getPlayer().getInventory().firstEmpty();
+                                if (slotsLeft < 0) {
+                                    plugin.consumeMessage(event.getPlayer(),
+                                            plugin.getSettingsManager().getSettings().slotsFullMessage,
+                                            Collections.emptyMap());
+
+                                } else event.getPlayer().getInventory().setItem(slotsLeft, itemStack);
                             }
                         }
                         if (reward.commands.length > 0) {
@@ -105,33 +106,35 @@ public class FishingListener implements Listener {
                                 plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "/" + command);
                             }
                         }
-                        event.setExpToDrop(reward.xp);
+                        event.getPlayer().setTotalExperience(event.getPlayer().getTotalExperience() + reward.xp);
 
 
                     } else {
                         // Failed to catch
-                        event.getCaught().remove();
                         updater.removePlayer(event.getPlayer());
                         plugin.consumeMessage(event.getPlayer(),
                                 plugin.getSettingsManager().getSettings().fishTooEarlyMessage, Collections.emptyMap());
-
+                        updater.removeHook(event.getHook());
                     }
                     break;
                 case CAUGHT_FISH:
                     // Caught fake fish
                     event.getCaught().remove();
+                    event.setExpToDrop(0);
                     updater.removePlayer(event.getPlayer());
                     // todo: add placeholders.
                     plugin.consumeMessage(event.getPlayer(), plugin.getSettingsManager().getSettings().catchBobberMessage,
                             Collections.emptyMap());
                     break;
                 default:
+                    updater.removeHook(event.getHook());
                     break;
             }
 
         } else {
             if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
                 event.getCaught().remove();
+                event.setExpToDrop(0);
                 // We cancelled their event if they try fishing.
                 // Now we send them configured messages from their overlords about fishing.
                 Message message = plugin.getSettingsManager().getSettings().noFishingMessage;
@@ -147,7 +150,6 @@ public class FishingListener implements Listener {
         if (event.getEntity() instanceof FishHook) {
             // Made sure this is hook
             Block b = event.getEntity().getLocation().getBlock();
-            System.out.println(b);
             // get the block the hook hit
             if (b.getType() == Material.WATER || b.getType() == Material.STATIONARY_WATER) {
                 // Make sure its water
@@ -163,6 +165,7 @@ public class FishingListener implements Listener {
                     plugin.consumeMessage((Player) event.getEntity().getShooter(),
                             plugin.getSettingsManager().getSettings().fishingMessage,
                             Collections.emptyMap());
+                    updater.removeHook((FishHook) event.getEntity());
                 }
             }
         }

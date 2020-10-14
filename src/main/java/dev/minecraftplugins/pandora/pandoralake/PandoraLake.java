@@ -93,20 +93,32 @@ public final class PandoraLake extends JavaPlugin {
 
     public void consumeMessage(Player player, Message message, Map<String, String> placeholders) {
         // Clear titles and actionbar
-        String titleBarMessage = FormatUtil.color(message.titlebar.title.message);
-        String subTitleBarMessage = FormatUtil.color(message.titlebar.subTitle.message);
+        String titleBarMessage = "";
+        String subTitleBarMessage = "";
+        if (message.titlebar != null) {
+            if (message.titlebar.title != null) {
+                titleBarMessage = FormatUtil.color(message.titlebar.title.message);
+            }
+            if (message.titlebar.subTitle != null) {
+                subTitleBarMessage = FormatUtil.color(message.titlebar.subTitle.message);
+            }
+        }
         for (String key : placeholders.keySet()) {
             titleBarMessage = titleBarMessage.replace(key, placeholders.get(key));
             subTitleBarMessage = subTitleBarMessage.replace(key, placeholders.get(key));
         }
-        if (message.titlebar.title.sound.enabled)
-            Bukkit.getScheduler().runTaskLater(this, () -> player.playSound(player.getLocation(),
-                    message.titlebar.title.sound.sound, message.titlebar.title.sound.volume,
-                    message.titlebar.title.sound.pitch), message.titlebar.title.fadeIn);
-        if (message.titlebar.subTitle.sound.enabled)
-            Bukkit.getScheduler().runTaskLater(this, () -> player.playSound(player.getLocation(),
-                    message.titlebar.subTitle.sound.sound, message.titlebar.subTitle.sound.volume,
-                    message.titlebar.subTitle.sound.pitch), message.titlebar.subTitle.fadeIn);
+        if (message.titlebar != null) {
+            if (message.titlebar.title != null)
+                if (message.titlebar.title.sound.enabled)
+                    Bukkit.getScheduler().runTaskLater(this, () -> player.playSound(player.getLocation(),
+                            message.titlebar.title.sound.sound, message.titlebar.title.sound.volume,
+                            message.titlebar.title.sound.pitch), message.titlebar.title.fadeIn);
+            if (message.titlebar.subTitle != null)
+                if (message.titlebar.subTitle.sound.enabled)
+                    Bukkit.getScheduler().runTaskLater(this, () -> player.playSound(player.getLocation(),
+                            message.titlebar.subTitle.sound.sound, message.titlebar.subTitle.sound.volume,
+                            message.titlebar.subTitle.sound.pitch), message.titlebar.subTitle.fadeIn);
+        }
         // Readability 0, coolness factor 100 - ternary operators FTW
         sendTitle(player,
                 message.titlebar.title.enabled ? titleBarMessage : "",
