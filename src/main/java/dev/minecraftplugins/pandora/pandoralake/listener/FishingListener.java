@@ -161,7 +161,7 @@ public class FishingListener implements Listener {
                     updater.addPlayer((Player) event.getEntity().getShooter(), catchTime);
                     // todo: add in placeholders
                     plugin.consumeMessage((Player) event.getEntity().getShooter(),
-                            plugin.getSettingsManager().getSettings().catchBobberMessage,
+                            plugin.getSettingsManager().getSettings().fishingMessage,
                             Collections.emptyMap());
                 }
             }
