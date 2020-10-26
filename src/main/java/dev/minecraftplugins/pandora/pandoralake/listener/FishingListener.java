@@ -69,8 +69,9 @@ public class FishingListener implements Listener {
                         if (reward.item.shouldGive) {
                             ItemStack itemStack = ItemBuilder.start(Material.getMaterial(reward.item.id))
                                     .lore(reward.item.lore).amount(reward.item.amount)
-                                    .data((short) reward.item.data).name(reward.item.name)
+                                    .name(reward.item.name)
                                     .build();
+                            if(reward.item.data != 0) itemStack.setDurability((short) reward.item.data);
                             for (Map.Entry<String, Integer> stringIntegerEntry : reward.item.enchantmentMap.entrySet()) {
                                 itemStack.addUnsafeEnchantment(new EnchantmentWrapper(
                                         Enchantment.getByName(stringIntegerEntry.getKey().toLowerCase()).id), stringIntegerEntry.getValue());
@@ -119,6 +120,8 @@ public class FishingListener implements Listener {
                     break;
                 case CAUGHT_FISH:
                     // Caught fake fish
+                    // todo: add catch fish check here and also check if they're on the list for being able to catch a fish.
+
                     event.getCaught().remove();
                     event.setExpToDrop(0);
                     updater.removePlayer(event.getPlayer());

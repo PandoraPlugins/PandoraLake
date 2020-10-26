@@ -40,9 +40,6 @@ public class RewardsManager {
                 return stringRewardEntry.getValue();
             }
         }
-        System.out.println(currentSum);
-        System.out.println(roll);
-        System.out.println(chanceMap);
         return null;
     }
 }

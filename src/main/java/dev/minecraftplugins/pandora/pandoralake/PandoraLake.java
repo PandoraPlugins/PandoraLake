@@ -4,6 +4,7 @@ import com.azortis.azortislib.utils.FormatUtil;
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import dev.minecraftplugins.pandora.pandoralake.commands.GiveCommand;
 import dev.minecraftplugins.pandora.pandoralake.commands.ReloadCommand;
 import dev.minecraftplugins.pandora.pandoralake.glowing.Glow;
 import dev.minecraftplugins.pandora.pandoralake.listener.FishingListener;
@@ -55,6 +56,7 @@ public final class PandoraLake extends JavaPlugin {
         }
         registerGlow();
         new ReloadCommand(this);
+        new GiveCommand(this);
         rewardsManager = new RewardsManager(this);
         Bukkit.getPluginManager().registerEvents(new FishingListener(this), this);
         Bukkit.getLogger().info("Hooked into WorldGuard!");
