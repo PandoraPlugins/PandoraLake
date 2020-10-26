@@ -32,17 +32,17 @@ public class RewardsManager {
     }
 
     public Reward getRandomReward() {
-        List<Map.Entry<String, Reward>> rewards = new ArrayList<>();
         double roll = ThreadLocalRandom.current().nextDouble(100.0);
+        double currentSum = 0;
         for (Map.Entry<String, Reward> stringRewardEntry : plugin.getSettingsManager().getRewards().rewardMap.entrySet()) {
-            if (stringRewardEntry.getValue().enabled && chanceMap.get(stringRewardEntry.getKey()) >= roll) {
-                rewards.add(stringRewardEntry);
+            currentSum += chanceMap.get(stringRewardEntry.getKey());
+            if (stringRewardEntry.getValue().enabled && currentSum >= roll) {
+                return stringRewardEntry.getValue();
             }
         }
-        if (rewards.size() > 1) {
-            Collections.shuffle(rewards);
-            return rewards.get(0).getValue();
-        } else if (rewards.size() == 1) return rewards.get(0).getValue();
-        else return null;
+        System.out.println(currentSum);
+        System.out.println(roll);
+        System.out.println(chanceMap);
+        return null;
     }
 }

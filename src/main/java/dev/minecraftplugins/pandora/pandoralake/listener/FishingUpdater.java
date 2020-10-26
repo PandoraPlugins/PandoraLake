@@ -2,6 +2,7 @@ package dev.minecraftplugins.pandora.pandoralake.listener;
 
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import dev.minecraftplugins.pandora.pandoralake.PandoraLake;
+import io.netty.util.internal.ConcurrentSet;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -9,6 +10,7 @@ import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class FishingUpdater implements Runnable {
@@ -19,9 +21,9 @@ public class FishingUpdater implements Runnable {
 
     public FishingUpdater(PandoraLake plugin) {
         this.plugin = plugin;
-        fishingMap = new HashMap<>();
-        catchers = new HashSet<>();
-        fishingHookTimer = new HashMap<>();
+        fishingMap = new ConcurrentHashMap<>();
+        catchers = new ConcurrentSet<>();
+        fishingHookTimer = new ConcurrentHashMap<>();
 
     }
 
