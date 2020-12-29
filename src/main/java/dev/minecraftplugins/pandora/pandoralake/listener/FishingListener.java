@@ -80,7 +80,7 @@ public class FishingListener implements Listener {
                                         Enchantment.getByName(stringIntegerEntry.getKey().toLowerCase()).id), stringIntegerEntry.getValue());
                             }
                             if (reward.item.glowing)
-                                itemStack.addUnsafeEnchantment(new Glow(75), 1);
+                                itemStack.addUnsafeEnchantment(new Glow(70), 1);
                             if (reward.item.nbtTags.size() > 0) {
                                 net.minecraft.server.v1_8_R3.ItemStack nmsI = CraftItemStack.asNMSCopy(itemStack);
                                 NBTTagCompound compound = nmsI.getTag();
