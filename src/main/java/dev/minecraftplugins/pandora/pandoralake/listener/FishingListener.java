@@ -71,8 +71,6 @@ public class FishingListener implements Listener {
                                     .lore(reward.item.lore).amount(reward.item.amount)
                                     .name(reward.item.name)
                                     .build();
-                            final RewardEvent rewardEvent = new RewardEvent(itemStack, event.getPlayer());
-                            Bukkit.getServer().getPluginManager().callEvent(rewardEvent);
 
                             if(reward.item.data != 0) itemStack.setDurability((short) reward.item.data);
                             for (Map.Entry<String, Integer> stringIntegerEntry : reward.item.enchantmentMap.entrySet()) {
@@ -89,6 +87,9 @@ public class FishingListener implements Listener {
                                 nmsI.setTag(compound);
                                 itemStack = CraftItemStack.asBukkitCopy(nmsI);
                             }
+                            final RewardEvent rewardEvent = new RewardEvent(itemStack, event.getPlayer());
+                            Bukkit.getServer().getPluginManager().callEvent(rewardEvent);
+
                             if (!plugin.getSettingsManager().getSettings().instantPickup) {
                                 Item item = event.getHook().getLocation().getWorld().dropItem(event.getHook().getLocation(), itemStack);
                                 Vector velocity = event.getPlayer().getEyeLocation().toVector().subtract(item.getLocation().toVector());
