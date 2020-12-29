@@ -80,15 +80,22 @@ public final class PandoraLake extends JavaPlugin {
                 !Bukkit.getPluginManager().getPlugin("WorldGuard").isEnabled();
     }
 
-    private void registerGlow() {
+    public void registerGlow() {
         try {
             Field f = Enchantment.class.getDeclaredField("acceptingNew");
             f.setAccessible(true);
             f.set(null, true);
-
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             Glow glow = new Glow(70);
             Enchantment.registerEnchantment(glow);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
+        }
+        catch (IllegalArgumentException ignored){
+        }
+        catch(Exception e){
             e.printStackTrace();
         }
     }

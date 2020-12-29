@@ -71,13 +71,16 @@ public class FishingListener implements Listener {
                                     .lore(reward.item.lore).amount(reward.item.amount)
                                     .name(reward.item.name)
                                     .build();
+                            final RewardEvent rewardEvent = new RewardEvent(itemStack, event.getPlayer());
+                            Bukkit.getServer().getPluginManager().callEvent(rewardEvent);
+
                             if(reward.item.data != 0) itemStack.setDurability((short) reward.item.data);
                             for (Map.Entry<String, Integer> stringIntegerEntry : reward.item.enchantmentMap.entrySet()) {
                                 itemStack.addUnsafeEnchantment(new EnchantmentWrapper(
                                         Enchantment.getByName(stringIntegerEntry.getKey().toLowerCase()).id), stringIntegerEntry.getValue());
                             }
                             if (reward.item.glowing)
-                                itemStack.addUnsafeEnchantment(new Glow(70), 1);
+                                itemStack.addUnsafeEnchantment(new Glow(75), 1);
                             if (reward.item.nbtTags.size() > 0) {
                                 net.minecraft.server.v1_8_R3.ItemStack nmsI = CraftItemStack.asNMSCopy(itemStack);
                                 NBTTagCompound compound = nmsI.getTag();

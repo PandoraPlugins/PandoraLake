@@ -5,12 +5,23 @@ import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.inventory.ItemStack;
 
 public class Glow extends Enchantment {
+
     public Glow(int id) {
         super(id);
     }
 
     @Override
-    public String getName() {
+    public boolean canEnchantItem(ItemStack arg0) {
+        return false;
+    }
+
+    @Override
+    public boolean conflictsWith(Enchantment arg0) {
+        return false;
+    }
+
+    @Override
+    public EnchantmentTarget getItemTarget() {
         return null;
     }
 
@@ -20,22 +31,13 @@ public class Glow extends Enchantment {
     }
 
     @Override
-    public int getStartLevel() {
-        return 0;
-    }
-
-    @Override
-    public EnchantmentTarget getItemTarget() {
+    public String getName() {
         return null;
     }
 
     @Override
-    public boolean conflictsWith(Enchantment enchantment) {
-        return false;
+    public int getStartLevel() {
+        return 0;
     }
 
-    @Override
-    public boolean canEnchantItem(ItemStack itemStack) {
-        return false;
-    }
 }
